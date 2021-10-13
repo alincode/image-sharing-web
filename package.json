@@ -23,7 +23,7 @@
     "test": "react-scripts test",
     "start-web": "serve -s build -p 8000",
     "e2e": "wdio run wdio.conf.js",
-    "deploy": "gcloud app deploy app.yaml"
+    "deploy": "git push heroku master"
   },
   "eslintConfig": {
     "extends": "react-app"
