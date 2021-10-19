@@ -1,39 +1,23 @@
-import React, { useState, useEffect } from "react";
-import AttachmentService from "../services/attachment";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetch } from "../slices/attachment";
+import Image from "./Image";
 
 function HomePage() {
-  const [images, setAttachments] = useState([]);
-
+  const dispatch = useDispatch();
+  const { attachments, total } = useSelector((state) => state.attachment);
   useEffect(() => {
-    fetchAttachment();
-  }, []);
-
-  const fetchAttachment = () => {
-    AttachmentService.fetchAttachment()
-      .then((res) => {
-        setAttachments(res.attachments);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  };
+    dispatch(fetch());
+  }, [dispatch]);
 
   return (
     <main role="main">
       <div className="album py-5 bg-light">
         <div className="container">
+          Total: {total}
           <div className="row">
-            {images.map(function (image) {
-              return (
-                <div className="col-md-4" key={"image-" + image.id}>
-                  <div className="card mb-4 shadow-sm">
-                    <img src={image.url} alt={image.description} />
-                    <div className="card-body">
-                      <p className="card-text">{image.description}</p>
-                    </div>
-                  </div>
-                </div>
-              );
+            {attachments.map(function (image) {
+              return <Image image={image} key={image.id} />;
             })}
           </div>
         </div>

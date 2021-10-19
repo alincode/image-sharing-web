@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AttachmentService from "../services/attachment";
+import UserLikeService from "../services/userLike";
 import { setMessage } from "./message";
 
-export const fetch = createAsyncThunk(
-  "attachment/fetch",
-  async ({}, thunkAPI) => {
+export const like = createAsyncThunk(
+  "attachment/like",
+  async (attachmentId, thunkAPI) => {
     try {
-      const attachments = await AttachmentService.fetchAttachment();
-      return { attachments };
+      const data = await UserLikeService.like(attachmentId);
+      return { attachment: data };
     } catch (error) {
       const message = error.response.data.message;
       thunkAPI.dispatch(setMessage(message));
@@ -15,6 +16,25 @@ export const fetch = createAsyncThunk(
     }
   }
 );
+
+export const unlike = createAsyncThunk(
+  "attachment/unlike",
+  async (attachmentId, thunkAPI) => {
+    try {
+      const data = await UserLikeService.unlike(attachmentId);
+      return { attachment: data };
+    } catch (error) {
+      const message = error.response.data.message;
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const fetch = createAsyncThunk("attachments/fetch", async () => {
+  const res = await AttachmentService.fetchAttachments();
+  return res;
+});
 
 export const create = createAsyncThunk(
   "attachment/create",
@@ -24,8 +44,9 @@ export const create = createAsyncThunk(
         file,
         description
       );
-      thunkAPI.dispatch(setMessage("upload successful"));
-      return attachment;
+      thunkAPI.dispatch(
+        setMessage(`${attachment.sourceFilename} upload successful`)
+      );
     } catch (error) {
       const message = error.response.data.message;
       thunkAPI.dispatch(setMessage(message));
@@ -34,18 +55,18 @@ export const create = createAsyncThunk(
   }
 );
 
-const initialState = { attachments: [] };
+const initialState = { attachments: [], total: 0 };
 
 const attachmentSlice = createSlice({
   name: "attachment",
   initialState,
   extraReducers: {
     [fetch.fulfilled]: (state, action) => {
-      console.log("=== fetchAttachment slices ===");
+      return action.payload;
     },
-    [create.fulfilled]: (state, action) => {
-      console.log("=== createAttachment slices ===");
-    },
+    [create.fulfilled]: (state, action) => {},
+    [like.fulfilled]: (state, action) => {},
+    [unlike.fulfilled]: (state, action) => {},
   },
 });
 

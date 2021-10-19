@@ -22,7 +22,7 @@ export const register = createAsyncThunk(
     try {
       const data = await AuthService.register(username, password);
       thunkAPI.dispatch(setMessage(data.message));
-      return data;
+      return { user: data };
     } catch (error) {
       const message = error.response.data.message;
       thunkAPI.dispatch(setMessage(message));
@@ -47,6 +47,7 @@ const authSlice = createSlice({
   extraReducers: {
     [register.fulfilled]: (state, action) => {
       state.isLoggedIn = false;
+      state.user = action.payload.user;
     },
     [register.rejected]: (state, action) => {
       state.isLoggedIn = false;

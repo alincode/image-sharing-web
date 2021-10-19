@@ -18,7 +18,7 @@ export function createAttachment(file, description) {
     });
 }
 
-export function fetchAttachment() {
+export function fetchAttachments() {
   return axios.get(API_URL + "attachments").then((response) => {
     return response.data;
   });
@@ -26,7 +26,7 @@ export function fetchAttachment() {
 
 const attachmentService = {
   createAttachment,
-  fetchAttachment,
+  fetchAttachments,
 };
 
 export default attachmentService;
